@@ -1,9 +1,10 @@
-import { flamengo } from "@/flamengo";
-import { manchesterCity } from "@/manchester";
-import { Engine, Team } from "@white-horse/soccer-engine";
+import { MatchService } from "@/services/match-service";
 import type { FastifyInstance } from "fastify";
-import {ZodTypeProvider} from "fastify-type-provider-zod";
+import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
+import type { Match } from "@white-horse/soccer-engine";
+
+const matchResponseSchema = z.custom<Match>();
 
 const requestBody = z.object({
     home: z.string(),
@@ -11,35 +12,34 @@ const requestBody = z.object({
 })
 
 export const mathRoutes = async (app: FastifyInstance) => {
+    const matchService = new MatchService()
+
     app.withTypeProvider<ZodTypeProvider>().post(
         '/match',
         {
             schema: {
                 title: "Match",
-                description: "Teste",
+                description: "Responsável por simular a partida e retornar todos os detalhes.",
                 tags: ["Match"],
                 body: requestBody,
                 response: {
-                    200: z.object({
-                        result: z.string()
+                    200: matchResponseSchema,
+                    500: z.object({
+                        error: z.string()
                     })
                 }
             }
         },
         async (request, reply) => {
-            const engine = new Engine();
-            const match = engine.simulateMatch(manchesterCity, flamengo, {
-              stadiumName: 'Virtual Arena',
-              weather: 'Rain',
-              matchImportance: 15,
-              stadiumCapacity: 2000,
-              timeOfDay: 'Evening',
-              neutralVenue: true,
-              refereeStrictness: 5,
-            });
-            reply.status(200).send({
-                result: `${manchesterCity.name} ${match.homeGoals} - ${match.awayGoals} ${flamengo.name}`
-            })
+            const resultService = matchService.execute({})
+
+            if(resultService.left) {
+                reply.status(500).send({
+                    error: 'Internal server error.'
+                })
+            }
+
+            reply.status(200).send(resultService.right)
         }
     )
 }
