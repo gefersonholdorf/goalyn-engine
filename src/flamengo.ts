@@ -95,7 +95,7 @@ const starters = [
     passing: 86,
     dribbling: 86,
     heading: 78,
-    positioning: 86
+    positioning: 86,
   }),
 
   createPlayer('Luiz Araújo', 'FWD', {

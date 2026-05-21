@@ -3,8 +3,9 @@ import type { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import z from "zod";
 import type { Match } from "@white-horse/soccer-engine";
+import type { MatchType } from "@/types/match-type";
 
-const matchResponseSchema = z.custom<Match>();
+const matchResponseSchema = z.custom<MatchType>();
 
 const requestBody = z.object({
     home: z.string(),
