@@ -15,7 +15,7 @@ app.setSerializerCompiler(serializerCompiler);
 app.register(fastifySwagger, {
 	openapi: {
 		info: {
-			title: "Goalyn",
+			title: "Goalyn-Engine",
 			version: "1.0.0",
 		},
 		servers: [
